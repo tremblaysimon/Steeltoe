@@ -19,17 +19,17 @@ namespace Steeltoe.CloudFoundry.Connector.GemFire
 {
     public static class GemFireTypeLocator
     {
-        public static string[] Assemblies { get; internal set; } = new string[] { "Pivotal.GemFire" };
+        public static string[] Assemblies { get; internal set; } = new string[] { "Pivotal.GemFire", "GemfireDotNet" };
 
-        public static string[] CacheFactoryTypeNames { get; internal set; } = new string[] { "Apache.Geode.Client.CacheFactory" };
+        public static string[] CacheFactoryTypeNames { get; internal set; } = new string[] { "Apache.Geode.Client.CacheFactory", "Apache.Geode.DotNetCore.CacheFactory" };
 
-        public static string[] CacheTypeNames { get; internal set; } = new string[] { "Apache.Geode.Client.Cache" };
+        public static string[] CacheTypeNames { get; internal set; } = new string[] { "Apache.Geode.Client.Cache", "Apache.Geode.DotNetCore.Cache" };
 
-        public static string[] PoolFactoryTypeNames { get; internal set; } = new string[] { "Apache.Geode.Client.PoolFactory" };
+        public static string[] PoolFactoryTypeNames { get; internal set; } = new string[] { "Apache.Geode.Client.PoolFactory", "Apache.Geode.DotNetCore.PoolFactory" };
 
-        public static string[] RegionFactoryTypeNames { get; internal set; } = new string[] { "Apache.Geode.Client.RegionFactory" };
+        public static string[] RegionFactoryTypeNames { get; internal set; } = new string[] { "Apache.Geode.Client.RegionFactory", "Apache.Geode.DotNetCore.RegionFactory" };
 
-        public static Type CacheFactory => ConnectorHelpers.FindTypeOrThrow(Assemblies, CacheFactoryTypeNames, "CacheFactory", "the Pivotal GemFire dll");
+        public static Type CacheFactory => ConnectorHelpers.FindTypeOrThrow(Assemblies, CacheFactoryTypeNames, "CacheFactory", "the GemFire dll");
 
         public static MethodInfo CacheInitializer => ConnectorHelpers.FindMethod(CacheFactory, "Create");
 

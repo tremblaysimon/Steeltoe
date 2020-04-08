@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Apache.Geode.Client;
+// using Apache.Geode.Client;
+using Apache.Geode.DotNetCore;
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.ConnectorAutofac;

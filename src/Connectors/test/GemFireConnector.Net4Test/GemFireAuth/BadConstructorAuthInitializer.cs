@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Apache.Geode.Client;
+using Apache.Geode.DotNetCore;
+using System.Collections.Generic;
 
 namespace Steeltoe.CloudFoundry.Connector.Test
 {
@@ -23,7 +24,12 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             throw new System.NotImplementedException();
         }
 
-        public Properties<string, object> GetCredentials(Properties<string, string> props, string server)
+        //public Properties<string, object> GetCredentials(Properties<string, string> props, string server)
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        public Dictionary<string, string> GetCredentials()
         {
             throw new System.NotImplementedException();
         }
