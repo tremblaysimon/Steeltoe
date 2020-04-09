@@ -29,7 +29,7 @@ namespace Steeltoe.CloudFoundry.Connector.GemFire
 
         public static string[] RegionFactoryTypeNames { get; internal set; } = new string[] { "Apache.Geode.Client.RegionFactory", "Apache.Geode.DotNetCore.RegionFactory" };
 
-        public static Type CacheFactory => ConnectorHelpers.FindTypeOrThrow(Assemblies, CacheFactoryTypeNames, "CacheFactory", "the GemFire dll");
+        public static Type CacheFactory => ConnectorHelpers.FindTypeOrThrow(Assemblies, CacheFactoryTypeNames, "CacheFactory", "the Pivotal GemFire dll");
 
         public static MethodInfo CacheInitializer => ConnectorHelpers.FindMethod(CacheFactory, "Create");
 

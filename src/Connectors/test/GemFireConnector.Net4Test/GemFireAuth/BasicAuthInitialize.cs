@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// using Apache.Geode.Client;
+#if NET461
+using Apache.Geode.Client;
+#else
 using Apache.Geode.DotNetCore;
 using System.Collections.Generic;
+#endif
 
 namespace Steeltoe.CloudFoundry.Connector.Test
 {
@@ -33,16 +36,19 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         {
         }
 
-        // public Properties<string, object> GetCredentials(Properties<string, string> props, string server)
-        // {
-        //    var credentials = new Properties<string, object>();
-        //    credentials.Insert("security-username", _username);
-        //    credentials.Insert("security-password", _password);
-        //    return credentials;
-        // }
+#if NET461
+        public Properties<string, object> GetCredentials(Properties<string, string> props, string server)
+        {
+            var credentials = new Properties<string, object>();
+            credentials.Insert("security-username", _username);
+            credentials.Insert("security-password", _password);
+            return credentials;
+        }
+#else
         public Dictionary<string, string> GetCredentials()
         {
             return new Dictionary<string, string> { { "security-username", _username }, { "security-password", _password } };
         }
+#endif
     }
 }

@@ -58,6 +58,13 @@
     <StyleCopVersion>1.1.118</StyleCopVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
+    <EF6Version>6.3.0</EF6Version>
+    <ExtensionsVersion>3.1.0</ExtensionsVersion>
+    <HealthChecksVersion>3.1.0</HealthChecksVersion>
+    <LoggingVersion>3.1.0</LoggingVersion>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.1' OR '$(TargetFramework)' == 'netcoreapp3.0'">
     <AspNetCoreVersion>3.0.0</AspNetCoreVersion>
     <EF6Version>6.3.0</EF6Version>

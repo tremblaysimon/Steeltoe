@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// using Apache.Geode.Client;
+#if NET461
+using Apache.Geode.Client;
+#else
 using Apache.Geode.DotNetCore;
+#endif
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.ConnectorAutofac;

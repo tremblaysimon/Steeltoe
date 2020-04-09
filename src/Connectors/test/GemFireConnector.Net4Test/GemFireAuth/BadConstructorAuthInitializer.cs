@@ -12,8 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if NET461
+using Apache.Geode.Client;
+#else
 using Apache.Geode.DotNetCore;
 using System.Collections.Generic;
+#endif
 
 namespace Steeltoe.CloudFoundry.Connector.Test
 {
@@ -24,14 +28,16 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             throw new System.NotImplementedException();
         }
 
-        //public Properties<string, object> GetCredentials(Properties<string, string> props, string server)
-        //{
-        //    throw new System.NotImplementedException();
-        //}
-
+#if NET461
+        public Properties<string, object> GetCredentials(Properties<string, string> props, string server)
+        {
+            throw new System.NotImplementedException();
+        }
+#else
         public Dictionary<string, string> GetCredentials()
         {
             throw new System.NotImplementedException();
         }
+#endif
     }
 }
