@@ -16,6 +16,10 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Steeltoe.Connector.GemFire
 {
@@ -63,7 +67,8 @@ namespace Steeltoe.Connector.GemFire
                     throw new ConnectorException("Failed to create an instance of Apache.Geode.Client.IAuthInitializer. Make sure you have a constructor that takes two strings (username and password) as parameters", e);
                 }
 
-                return GemFireTypeLocator.GetCacheAuthInitializer(authInitializer).Invoke(factory, new object[] { authInitializerInstance });
+                GemFireTypeLocator.GetCacheAuthInitializer(authInitializer).SetValue(factory, authInitializerInstance, null);
+                return factory;
             }
 
             return factory;
@@ -76,7 +81,7 @@ namespace Steeltoe.Connector.GemFire
 
         public object CreatePoolFactory(object cache)
         {
-            var poolFactory = GemFireTypeLocator.PoolFactoryInitializer.Invoke(cache, null);
+            var poolFactory = GemFireTypeLocator.GetPoolFactoryInitializer.GetValue(cache);
             foreach (var locator in _config.ParsedLocators())
             {
                 _logger?.LogTrace("Adding GemFire locator {GemFireLocator} to pool factory", locator.Key + ":" + locator.Value);
@@ -84,6 +89,15 @@ namespace Steeltoe.Connector.GemFire
             }
 
             return poolFactory;
+        }
+
+        public object CreateRegionFactory(object cache)
+        {
+            var regionTypeNames = GemFireTypeLocator.RegionShortcutType.GetEnumNames();
+            // TODO: Extract the configured Region type instead of hardcoding Proxy
+            var index = Array.IndexOf(regionTypeNames, "Proxy");
+
+            return GemFireTypeLocator.RegionFactoryInitializer.Invoke(cache, new object[] { GemFireTypeLocator.RegionShortcutType.GetEnumValues().GetValue(index) });
         }
     }
 }
