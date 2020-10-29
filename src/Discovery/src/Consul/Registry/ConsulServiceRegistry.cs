@@ -16,13 +16,6 @@ namespace Steeltoe.Discovery.Consul.Registry
     /// </summary>
     public class ConsulServiceRegistry : IConsulServiceRegistry
     {
-#pragma warning disable S1144 // Unused private types or members should be removed
-        private const string UNKNOWN = "UNKNOWN";
-        private const string UP = "UP";
-        private const string DOWN = "DOWN";
-        private const string OUT_OF_SERVICE = "OUT_OF_SERVICE";
-#pragma warning restore S1144 // Unused private types or members should be removed
-
         private readonly IConsulClient _client;
         private readonly IScheduler _scheduler;
         private readonly ILogger<ConsulServiceRegistry> _logger;
@@ -30,18 +23,7 @@ namespace Steeltoe.Discovery.Consul.Registry
         private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
         private readonly ConsulDiscoveryOptions _options;
 
-        internal ConsulDiscoveryOptions Options
-        {
-            get
-            {
-                if (_optionsMonitor != null)
-                {
-                    return _optionsMonitor.CurrentValue;
-                }
-
-                return _options;
-            }
-        }
+        internal ConsulDiscoveryOptions Options => _optionsMonitor != null ? _optionsMonitor.CurrentValue : _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsulServiceRegistry"/> class.
@@ -75,14 +57,7 @@ namespace Steeltoe.Discovery.Consul.Registry
 
         /// <inheritdoc/>
         public Task RegisterAsync(IConsulRegistration registration)
-        {
-            if (registration == null)
-            {
-                throw new ArgumentNullException(nameof(registration));
-            }
-
-            return RegisterAsyncInternal(registration);
-        }
+            => registration == null ? throw new ArgumentNullException(nameof(registration)) : RegisterAsyncInternal(registration);
 
         private async Task RegisterAsyncInternal(IConsulRegistration registration)
         {
@@ -111,14 +86,7 @@ namespace Steeltoe.Discovery.Consul.Registry
 #pragma warning disable SA1202 // Elements must be ordered by access
         /// <inheritdoc/>
         public Task DeregisterAsync(IConsulRegistration registration)
-        {
-            if (registration == null)
-            {
-                throw new ArgumentNullException(nameof(registration));
-            }
-
-            return DeregisterAsyncInternal(registration);
-        }
+            => registration == null ? throw new ArgumentNullException(nameof(registration)) : DeregisterAsyncInternal(registration);
 
         private Task DeregisterAsyncInternal(IConsulRegistration registration)
         {
@@ -134,25 +102,21 @@ namespace Steeltoe.Discovery.Consul.Registry
 
         /// <inheritdoc/>
         public Task SetStatusAsync(IConsulRegistration registration, string status)
-        {
-            if (registration == null)
-            {
-                throw new ArgumentNullException(nameof(registration));
-            }
-
-            return SetStatusAsyncInternal(registration, status);
-        }
+            => registration == null ? throw new ArgumentNullException(nameof(registration)) : SetStatusAsyncInternal(registration, status);
 
         private Task SetStatusAsyncInternal(IConsulRegistration registration, string status)
         {
-            if (OUT_OF_SERVICE.Equals(status, StringComparison.OrdinalIgnoreCase))
+            if (Enum.TryParse(status, out InstanceStatus iStatus))
             {
-                return _client.Agent.EnableServiceMaintenance(registration.InstanceId, OUT_OF_SERVICE);
-            }
+                if (iStatus == InstanceStatus.OUT_OF_SERVICE)
+                {
+                    return _client.Agent.EnableServiceMaintenance(registration.InstanceId, InstanceStatus.OUT_OF_SERVICE.ToString());
+                }
 
-            if (UP.Equals(status, StringComparison.OrdinalIgnoreCase))
-            {
-                return _client.Agent.DisableServiceMaintenance(registration.InstanceId);
+                if (iStatus == InstanceStatus.UP)
+                {
+                    return _client.Agent.DisableServiceMaintenance(registration.InstanceId);
+                }
             }
 
             throw new ArgumentException($"Unknown status: {status}");
@@ -160,15 +124,9 @@ namespace Steeltoe.Discovery.Consul.Registry
 
         /// <inheritdoc/>
         public Task<object> GetStatusAsync(IConsulRegistration registration)
-        {
-            if (registration == null)
-            {
-                throw new ArgumentNullException(nameof(registration));
-            }
+            => registration == null ? throw new ArgumentNullException(nameof(registration)) : GetStatusAsyncInternal(registration);
 
-            return GetStatusAsyncInternal(registration);
-        }
-
+        // TODO: change accessibility on this method to internal
         public async Task<object> GetStatusAsyncInternal(IConsulRegistration registration)
         {
             var response = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default).ConfigureAwait(false);
@@ -178,31 +136,25 @@ namespace Steeltoe.Discovery.Consul.Registry
             {
                 if (check.ServiceID.Equals(registration.InstanceId) && check.Name.Equals("Service Maintenance Mode", StringComparison.OrdinalIgnoreCase))
                 {
-                    return OUT_OF_SERVICE;
+                    return InstanceStatus.OUT_OF_SERVICE.ToString();
                 }
             }
 
-            return UP;
+            return InstanceStatus.UP.ToString();
         }
 #pragma warning restore SA1202 // Elements must be ordered by access
 
         /// <inheritdoc/>
         public void Register(IConsulRegistration registration)
-        {
-            RegisterAsync(registration).GetAwaiter().GetResult();
-        }
+            => RegisterAsync(registration).GetAwaiter().GetResult();
 
         /// <inheritdoc/>
         public void Deregister(IConsulRegistration registration)
-        {
-            DeregisterAsync(registration).GetAwaiter().GetResult();
-        }
+            => DeregisterAsync(registration).GetAwaiter().GetResult();
 
         /// <inheritdoc/>
         public void SetStatus(IConsulRegistration registration, string status)
-        {
-            SetStatusAsync(registration, status).GetAwaiter().GetResult();
-        }
+            => SetStatusAsync(registration, status).GetAwaiter().GetResult();
 
         /// <inheritdoc/>
         public S GetStatus<S>(IConsulRegistration registration)

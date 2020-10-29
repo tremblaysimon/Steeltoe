@@ -62,7 +62,7 @@ namespace Steeltoe.Discovery.Consul.Registry
         }
 
         // For testing
-        internal ConsulRegistration()
+        public ConsulRegistration()
         {
         }
 
@@ -79,7 +79,7 @@ namespace Steeltoe.Discovery.Consul.Registry
         public AgentServiceRegistration Service { get; }
 
         /// <inheritdoc/>
-        public string InstanceId { get; private set; }
+        public string InstanceId { get; set; }
 
         /// <inheritdoc/>
         public string ServiceId { get; private set; }

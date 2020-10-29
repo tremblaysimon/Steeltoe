@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
-using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
 using System;
 using System.Collections.Generic;
@@ -20,13 +19,7 @@ namespace Steeltoe.Discovery.Eureka
         {
             private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
 
-            protected override IEurekaClientConfig Config
-            {
-                get
-                {
-                    return _configOptions.CurrentValue;
-                }
-            }
+            protected override IEurekaClientConfig Config => _configOptions.CurrentValue;
 
             public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null, IHttpClientHandlerProvider handlerProvider = null)
             {
@@ -40,13 +33,7 @@ namespace Steeltoe.Discovery.Eureka
         private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
         private readonly IServiceInstance _thisInstance;
 
-        public override IEurekaClientConfig ClientConfig
-        {
-            get
-            {
-                return _configOptions.CurrentValue;
-            }
-        }
+        public override IEurekaClientConfig ClientConfig => _configOptions.CurrentValue;
 
         public EurekaDiscoveryClient(
             IOptionsMonitor<EurekaClientOptions> clientConfig,
@@ -69,21 +56,9 @@ namespace Steeltoe.Discovery.Eureka
             Initialize();
         }
 
-        public IList<string> Services
-        {
-            get
-            {
-                return GetServices();
-            }
-        }
+        public IList<string> Services => GetServices();
 
-        public string Description
-        {
-            get
-            {
-                return "Spring Cloud Eureka Client";
-            }
-        }
+        public string Description => "Spring Cloud Eureka Client";
 
         public IList<string> GetServices()
         {
@@ -121,15 +96,19 @@ namespace Steeltoe.Discovery.Eureka
             return instances;
         }
 
-        public IServiceInstance GetLocalServiceInstance()
-        {
-            return _thisInstance;
-        }
+        public IServiceInstance GetLocalServiceInstance() => _thisInstance;
 
         public override T.Task ShutdownAsync()
         {
             _appInfoManager.InstanceStatus = InstanceStatus.DOWN;
             return base.ShutdownAsync();
         }
+
+        public async T.Task SetStatusAsync(InstanceStatus status)
+        {
+            await _httpClient.StatusUpdateAsync(_appInfoManager.InstanceInfo.AppName, _appInfoManager.InstanceInfo.InstanceId, status, _appInfoManager.InstanceInfo);
+        }
+
+        public InstanceStatus GetCurrentStatus() => _appInfoManager.InstanceStatus;
     }
 }

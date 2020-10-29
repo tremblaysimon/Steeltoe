@@ -25,19 +25,9 @@ namespace Steeltoe.Discovery.Consul.Discovery
         private readonly ConsulDiscoveryOptions _options;
         private readonly IServiceInstance _thisServiceInstance;
         private readonly IConsulServiceRegistrar _registrar;
+        private readonly IConsulServiceRegistry _serviceRegistry;
 
-        internal ConsulDiscoveryOptions Options
-        {
-            get
-            {
-                if (_optionsMonitor != null)
-                {
-                    return _optionsMonitor.CurrentValue;
-                }
-
-                return _options;
-            }
-        }
+        internal ConsulDiscoveryOptions Options => _optionsMonitor != null ? _optionsMonitor.CurrentValue : _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsulDiscoveryClient"/> class.
@@ -46,12 +36,14 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// <param name="options">the configuration options</param>
         /// <param name="registrar">a Consul registrar service</param>
         /// <param name="logger">optional logger</param>
-        public ConsulDiscoveryClient(IConsulClient client, ConsulDiscoveryOptions options, IConsulServiceRegistrar registrar = null, ILogger<ConsulDiscoveryClient> logger = null)
+        /// <param name="consulServiceRegistry">Client for interacting with registrations</param>
+        public ConsulDiscoveryClient(IConsulClient client, ConsulDiscoveryOptions options, IConsulServiceRegistrar registrar = null, ILogger<ConsulDiscoveryClient> logger = null, IConsulServiceRegistry consulServiceRegistry = null)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
             _registrar = registrar;
+            _serviceRegistry = consulServiceRegistry;
 
             if (_registrar != null)
             {
@@ -67,12 +59,14 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// <param name="optionsMonitor">the configuration options</param>
         /// <param name="registrar">a Consul registrar service</param>
         /// <param name="logger">optional logger</param>
-        public ConsulDiscoveryClient(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulServiceRegistrar registrar = null, ILogger<ConsulDiscoveryClient> logger = null)
+        /// <param name="consulServiceRegistry">Client for interacting with registrations</param>
+        public ConsulDiscoveryClient(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulServiceRegistrar registrar = null, ILogger<ConsulDiscoveryClient> logger = null, IConsulServiceRegistry consulServiceRegistry = null)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
             _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
             _logger = logger;
             _registrar = registrar;
+            _serviceRegistry = consulServiceRegistry;
 
             if (_registrar != null)
             {
@@ -107,13 +101,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
         public string Description { get; } = "HashiCorp Consul Client";
 
         /// <inheritdoc/>
-        public IList<string> Services
-        {
-            get
-            {
-                return GetServicesAsync().GetAwaiter().GetResult();
-            }
-        }
+        public IList<string> Services => GetServicesAsync().GetAwaiter().GetResult();
 
         #endregion Implementation of IDiscoveryClient
 
@@ -160,6 +148,18 @@ namespace Steeltoe.Discovery.Consul.Discovery
         {
             queryOptions ??= QueryOptions.Default;
             return GetServicesAsync(queryOptions).GetAwaiter().GetResult();
+        }
+
+        public async Task SetStatusAsync(InstanceStatus status)
+        {
+            _logger?.LogInformation("Changing instance status to {newStatus}", status);
+            await _serviceRegistry.SetStatusAsync(_registrar.Registration, status.ToString());
+        }
+
+        public InstanceStatus GetCurrentStatus()
+        {
+            var status = _serviceRegistry.GetStatusAsync(_registrar.Registration).GetAwaiter().GetResult().ToString();
+            return Enum.TryParse(status, out InstanceStatus result) ? result : InstanceStatus.UNKNOWN;
         }
 
         internal async Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, QueryOptions queryOptions)

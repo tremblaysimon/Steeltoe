@@ -302,6 +302,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.ClientBa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.ClientBase.Test", "Discovery\test\ClientBase.Test\Steeltoe.Discovery.ClientBase.Test.csproj", "{C5DDEE8C-E3EF-49BC-AEEE-B35271FC512A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fortune-Teller-Service", "..\..\..\Samples\Discovery\src\Fortune-Teller-Service\Fortune-Teller-Service.csproj", "{3B555FCF-1757-4ABB-B8C9-9E78FB817B5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -784,6 +786,10 @@ Global
 		{C5DDEE8C-E3EF-49BC-AEEE-B35271FC512A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5DDEE8C-E3EF-49BC-AEEE-B35271FC512A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5DDEE8C-E3EF-49BC-AEEE-B35271FC512A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B555FCF-1757-4ABB-B8C9-9E78FB817B5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B555FCF-1757-4ABB-B8C9-9E78FB817B5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B555FCF-1757-4ABB-B8C9-9E78FB817B5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B555FCF-1757-4ABB-B8C9-9E78FB817B5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

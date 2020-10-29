@@ -5,6 +5,7 @@
 using Consul;
 using Moq;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Discovery.Consul.Registry;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -221,6 +222,20 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             Assert.Contains("foo", inst.Metadata.Values);
             Assert.Contains("false", inst.Metadata.Values);
             Assert.Equal(new Uri("http://foo1.bar1.com:5678"), inst.Uri);
+        }
+
+        [Fact]
+        public void GetStatus_ReturnsRegisterStatus()
+        {
+            var options = new ConsulDiscoveryOptions();
+            var consulClientMoq = new Mock<IConsulClient>();
+            consulClientMoq.Setup(c => c.Catalog).Returns(new Mock<ICatalogEndpoint>().Object);
+            var registrar = new Mock<ConsulServiceRegistrar>();
+            var discoveryClient = new ConsulDiscoveryClient(consulClientMoq.Object, options, registrar.Object);
+
+            var status = discoveryClient.GetCurrentStatus();
+
+            Assert.Equal(InstanceStatus.UP, status);
         }
     }
 }

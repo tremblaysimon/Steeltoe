@@ -394,15 +394,6 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         }
     }
 
-    public enum InstanceStatus
-    {
-        UP,
-        DOWN,
-        STARTING,
-        OUT_OF_SERVICE,
-        UNKNOWN
-    }
-
     public enum ActionType
     {
         ADDED,
